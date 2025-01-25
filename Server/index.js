@@ -7,7 +7,7 @@ app.use(json())
 app.use(cors()) //cross-origin resouce 
 
 const db = createConnection({
-    host : 'localhost',
+    host : '127.0.0.1',
     user : 'root',
     password : "root",
     database : 'todo_db'
@@ -34,7 +34,7 @@ app.post('/new-task', (req, res) => {
         }
         else{
             console.log('todo saved');
-            const updatedTasks = 'select * from todo_db'
+            const updatedTasks = 'select * from todo'
             db.query(updatedTasks, (error, newList) => {
                 res.send(newList)
             })
@@ -86,14 +86,14 @@ app.post('/update-task', (req, res) => {
 })
 
 app.post('/delete-task', (req, res) => {
-    const q = 'delete from todos where id = ?';
+    const q = 'delete from todo_db.todo where id = ?';
     db.query(q, [req.body.id], (err, result) => {
         if(err){
             console.log('Failed to delete');
             
         }else{
             console.log('Deleted successfully');
-            db.query('select * from todos', (e, newList) => {
+            db.query('select * from todo_db.todo', (e, newList) => {
                 res.send(newList);
             })
         }
@@ -103,12 +103,12 @@ app.post('/delete-task', (req, res) => {
 app.post('/complete-task', (req, res) => {
     console.log(req.body);
     
-    const q = 'update todos set status = ? where id = ?'
+    const q = 'update todo_db.todo set status = ? where id = ?'
     db.query(q, ['completed', req.body.id], (err, result) => {
         if(result){
 
             
-            db.query('select * from todos', (e, newList) => {
+            db.query('select * from todo_db.todo', (e, newList) => {
                 res.send(newList)
             })
         }

@@ -112,7 +112,7 @@ const Home = () => {
                     <div className=' flex justify-between bg-white p-3 w-80 mt-3 rounded-md'>
                         <div>
                             <p className=' text-lg font-semibold'>{todo?.task}</p>
-                                <p className=' text-xs text-gray-600'>{new Date(todo.createdAt).toLocaleDateString()}</p>
+                                <p className=' text-xs text-gray-600'>{new Date(todo.date).toLocaleDateString()}</p>
                                 <p className=' text-sm text-gray-700'>Status : {todo.status}</p>
                         </div>
 
@@ -131,7 +131,7 @@ const Home = () => {
                     <div className=' flex justify-between bg-white p-3 w-80 mt-3 rounded-md'>
                         <div>
                             <p className=' text-lg font-semibold'>{todo?.task}</p>
-                                <p className=' text-xs text-gray-600'>{new Date(todo.createdAt).toLocaleDateString()}</p>
+                                <p className=' text-xs text-gray-600'>{new Date(todo.date).toLocaleDateString()}</p>
                                 <p className=' text-sm text-gray-700'>Status : {todo.status}</p>
                         </div>
 
