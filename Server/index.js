@@ -1,121 +1,60 @@
 import express, { json } from 'express';
 import cors from 'cors';
+import axios from 'axios';
+
 const app = express();
-import { createConnection } from 'mysql2';
+app.use(json());
+app.use(cors());
 
-app.use(json())
-app.use(cors()) //cross-origin resouce 
+app.post('/create-task', async (req, res) => {
+    console.log("Request body:", req.body); 
 
-const db = createConnection({
-    host : '127.0.0.1',
-    user : 'root',
-    password : "root",
-    database : 'todo_db'
-
-})
-
-db.connect((err) => {
-    if(!err){
-        console.log("Connected to database successfully");
-        
-    }else{
-        console.log(err);
-        
+    try {
+        const response = await axios.post('http://todo-create-task-service.todo-server-environment.svc.cluster.local:1000/create-task', req.body);
+        console.log("Response from backend service:", response.data); 
+        res.send(response.data);
+    } catch (error) {
+        console.error('Error creating task:', error); 
+        res.status(500).send(`Error creating task: ${error.message}`);
     }
-})
+});
 
-app.post('/new-task', (req, res) => {
-    console.log(req.body);
-    const q  = 'insert into todo (task, date, status) values (?, ?, ?)';
-    db.query(q, [req.body.task, new Date(), 'active'], (err, result) => {
-        if(err){
-            console.log('failed to store');
-            
-        }
-        else{
-            console.log('todo saved');
-            const updatedTasks = 'select * from todo'
-            db.query(updatedTasks, (error, newList) => {
-                res.send(newList)
-            })
-            
-        }
-    })
-    
-})
+app.get('/read-task', async (req, res) => {
+    try {
+        const response = await axios.get('http://todo-read-task-service.todo-server-environment.svc.cluster.local:2000/read-task');
+        res.send(response.data);
+    } catch (error) {
+        res.status(500).send('Error reading tasks');
+    }
+});
 
-app.get('/read-tasks', (req, res) => {
-    const q = 'SELECT * FROM todo_db.todo;';
-    db.query(q, (err, result) => {
-        if(err){
-            console.log("failed to read tasks");
-            
-        }
-        else{
-            console.log("got tasks successfully from db");
-            res.send(result)
-            
-            
-        }
-    })
-})
+app.post('/update-task', async (req, res) => {
+    try {
+        const response = await axios.post('http://todo-update-task-service.todo-server-environment.svc.cluster.local:3000/update-task', req.body);
+        res.send(response.data);
+    } catch (error) {
+        res.status(500).send('Error updating task');
+    }
+});
 
-app.post('/update-task', (req, res) => {
-    console.log(req.body);
-    const q = 'update todo_db.todo set task = ? where id = ?'
-    db.query(q, [req.body.task, req.body.updateId], (err, result) => {
-        if(err) {
-            console.log('failed to update');
-            
-        }
-        else{
-            console.log('updated');
-            db.query('select* from todo_db.todo', (e, r) => {
-                if(e){
-                    console.log(e);
-                    
-                }
-                else{
-                    res.send(r)
-                }
-            })
-            
-        }
-    })
-    
-})
+app.post('/delete-task', async (req, res) => {
+    try {
+        const response = await axios.post('http://todo-delete-task-service.todo-server-environment.svc.cluster.local:4000/delete-task', req.body);
+        res.send(response.data);
+    } catch (error) {
+        res.status(500).send('Error deleting task');
+    }
+});
 
-app.post('/delete-task', (req, res) => {
-    const q = 'delete from todo_db.todo where id = ?';
-    db.query(q, [req.body.id], (err, result) => {
-        if(err){
-            console.log('Failed to delete');
-            
-        }else{
-            console.log('Deleted successfully');
-            db.query('select * from todo_db.todo', (e, newList) => {
-                res.send(newList);
-            })
-        }
-    })
-})
+app.post('/complete-task', async (req, res) => {
+    try {
+        const response = await axios.post('http://todo-complete-task-service.todo-server-environment.svc.cluster.local:6000/complete-task', req.body);
+        res.send(response.data);
+    } catch (error) {
+        res.status(500).send('Error completing task');
+    }
+});
 
-app.post('/complete-task', (req, res) => {
-    console.log(req.body);
-    
-    const q = 'update todo_db.todo set status = ? where id = ?'
-    db.query(q, ['completed', req.body.id], (err, result) => {
-        if(result){
-
-            
-            db.query('select * from todo_db.todo', (e, newList) => {
-                res.send(newList)
-            })
-        }
-
-    })
-})
-
-app.listen(5000, () => {console.log('server started');
-})
-
+app.listen(5000, () => {
+    console.log('Server started on port 5000');
+});

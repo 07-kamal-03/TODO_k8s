@@ -10,26 +10,36 @@ const Home = () => {
     const [completedTodos, setCompletedTodos] = useState(null)
 
     const handleTabs = (tab) => {
-        setTab(tab)
+        setTab(tab) 
         
     }
 
     const handleAddTask = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:5000/new-task', {task})
+        console.log('Attempting to connect to the backend...');
+        axios.post('http://localhost:5000/create-task', {task})
         .then(res => {
+            console.log('Backend connected and task added successfully:');
             setTodos(res.data)
             setTask('')
+        })
+        .catch(err => {
+            console.error('Error connecting to the backend:', err);
         });
         
     }
 
     useEffect(() => {
-        axios.get('http://localhost:5000/read-tasks')
+        console.log('Attempting to connect to the backend...');
+        axios.get('http://localhost:5000/read-task')
         .then(res => {
+            console.log('Backend connected and task added successfully:');
             setTodos(res.data)
              
         })
+        .catch(err => {
+            console.error('Error connecting to the backend:', err);
+        });
     }, [])
 
     
@@ -45,28 +55,43 @@ const Home = () => {
     }
 
     const updateTask = () => {
+        console.log('Attempting to connect to the backend...');
         axios.post('http://localhost:5000/update-task', {updateId, task})
         .then(res => {
+            console.log('Backend connected and task added successfully:');
             setTodos(res.data)
             setTask('')
             setIsEdit(false)
         })
+        .catch(err => {
+            console.error('Error connecting to the backend:', err);
+        });
 
     }
 
     const handleDelete = (id) => {
+        console.log('Attempting to connect to the backend...');
         axios.post('http://localhost:5000/delete-task', {id})
         .then(res => {
+            console.log('Backend connected and task added successfully:');
             setTodos(res.data)
         })
+        .catch(err => {
+            console.error('Error connecting to the backend:', err);
+        });
         
     }
 
     const handleComplete = (id) => {
+        console.log('Attempting to connect to the backend...');
         axios.post('http://localhost:5000/complete-task', {id})
         .then(res => {
+            console.log('Backend connected and task added successfully:');
             setTodos(res.data)
         })
+        .catch(err => {
+            console.error('Error connecting to the backend:', err);
+        });
     }
 
     
